@@ -26,6 +26,11 @@ const CreateCapsule = () => {
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
+      if (selectedFile.size > 5 * 1024 * 1024) {
+        toast.error('File too large. Maximum size is 5MB.');
+        e.target.value = '';
+        return;
+      }
       setFile(selectedFile);
     }
   };
@@ -46,7 +51,8 @@ const CreateCapsule = () => {
       const data = new FormData();
       data.append('title', formData.title);
       data.append('message', formData.message);
-      data.append('unlockDate', formData.unlockDate);
+      // Convert local datetime to UTC ISO string so backend stores correct time
+      data.append('unlockDate', new Date(formData.unlockDate).toISOString());
       data.append('isPublic', formData.isPublic);
       data.append('isEncrypted', formData.isEncrypted);
       
@@ -148,7 +154,7 @@ const CreateCapsule = () => {
                     {file ? file.name : 'Click to upload or drag and drop'}
                   </p>
                   <p className="text-sm text-gray-500">
-                    Any file type accepted (No size limit)
+                    Images, videos, audio, documents (max 5MB)
                   </p>
                 </label>
               </div>

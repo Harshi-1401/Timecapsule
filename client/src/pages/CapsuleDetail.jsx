@@ -142,7 +142,8 @@ const CapsuleDetail = () => {
                 </div>
               )}
 
-              {capsule.mediaUrl && (
+              {/* Media section */}
+              {capsule.mediaUrl ? (
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">Media:</h3>
                   <div className="bg-gray-50 rounded-lg p-4">
@@ -154,35 +155,35 @@ const CapsuleDetail = () => {
                       />
                     )}
                     {capsule.mediaType === 'video' && (
-                      <video
-                        controls
-                        className="w-full rounded-lg"
-                        src={capsule.mediaUrl}
-                      />
+                      <video controls className="w-full rounded-lg" src={capsule.mediaUrl} />
                     )}
                     {capsule.mediaType === 'audio' && (
-                      <audio
-                        controls
-                        className="w-full"
-                        src={capsule.mediaUrl}
-                      />
+                      <audio controls className="w-full" src={capsule.mediaUrl} />
                     )}
                     {capsule.mediaType === 'file' && (
-                      <a 
+                      <a
                         href={capsule.mediaUrl}
                         download={capsule.mediaFilename || 'download'}
-                        className="flex items-center justify-center space-x-3 bg-purple-50 border-2 border-purple-200 rounded-lg p-6 hover:bg-purple-100 transition"
+                        className="flex items-center gap-3 bg-purple-50 border-2 border-purple-200 rounded-lg p-6 hover:bg-purple-100 transition"
                       >
                         <span className="text-5xl">📄</span>
-                        <div className="text-left">
-                          <p className="text-purple-700 font-bold text-lg">Download Attached File</p>
+                        <div>
+                          <p className="text-purple-700 font-bold text-lg">
+                            {capsule.mediaFilename || 'Download File'}
+                          </p>
                           <p className="text-purple-600 text-sm">Click to download</p>
                         </div>
                       </a>
                     )}
                   </div>
                 </div>
-              )}
+              ) : capsule.hasLegacyMedia ? (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-800">
+                  📎 This capsule had an attached {capsule.mediaType} file, but it is no longer
+                  available (uploaded before cloud storage was enabled). New capsules will retain
+                  their media permanently.
+                </div>
+              ) : null}
             </div>
           ) : (
             <div className="text-center py-12">

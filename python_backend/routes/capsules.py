@@ -19,11 +19,16 @@ MAX_FILE_BYTES = 5 * 1024 * 1024
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
 def capsule_to_dict(c: Capsule) -> dict:
-    # Handle both old file-path URLs and new base64 data URIs
     media_url = c.media_url
-    if media_url and media_url.startswith("/uploads/"):
-        # Old format — file no longer exists on Render, return None
-        media_url = None
+    media_type = c.media_type
+    media_filename = c.media_filename
+
+    # Old capsules had file paths like /uploads/xxx.jpg — files are gone on Render
+    # Keep mediaType so frontend knows what it was, but clear the URL
+    # and set a flag so frontend can show "file unavailable" message
+    is_legacy_file = media_url is not None and media_url.startswith("/uploads/")
+    if is_legacy_file:
+        media_url = None  # file no longer exists
 
     return {
         "_id": str(c.id),
@@ -31,13 +36,18 @@ def capsule_to_dict(c: Capsule) -> dict:
         "title": c.title,
         "message": c.message,
         "mediaUrl": media_url,
-        "mediaType": c.media_type if media_url else None,
-        "mediaFilename": c.media_filename,
+        "mediaType": media_type,
+        "mediaFilename": media_filename,
+        "hasLegacyMedia": is_legacy_file,  # tells frontend file existed but is gone
         "unlockDate": c.unlock_date.isoformat() if c.unlock_date else None,
         "isPublic": c.is_public,
         "isEncrypted": c.is_encrypted,
         "isUnlocked": c.is_unlocked,
         "isReviewed": c.is_reviewed,
+        "reportCount": c.report_count,
+        "userId": c.user_id,
+        "createdAt": c.created_at.isoformat() if c.created_at else None,
+    }
         "reportCount": c.report_count,
         "userId": c.user_id,
         "createdAt": c.created_at.isoformat() if c.created_at else None,

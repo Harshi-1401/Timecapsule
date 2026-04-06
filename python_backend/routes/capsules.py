@@ -48,10 +48,6 @@ def capsule_to_dict(c: Capsule) -> dict:
         "userId": c.user_id,
         "createdAt": c.created_at.isoformat() if c.created_at else None,
     }
-        "reportCount": c.report_count,
-        "userId": c.user_id,
-        "createdAt": c.created_at.isoformat() if c.created_at else None,
-    }
 
 
 def _auto_unlock(capsule: Capsule):

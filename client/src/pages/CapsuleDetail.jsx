@@ -18,12 +18,14 @@ const CapsuleDetail = () => {
     if (capsule && !capsule.isUnlocked) {
       const timer = setInterval(() => {
         const now = new Date().getTime();
-        const unlockTime = new Date(capsule.unlockDate).getTime();
+        const unlockTime = new Date(normalizeDate(capsule.unlockDate)).getTime();
         const distance = unlockTime - now;
 
         if (distance < 0) {
           setTimeLeft('Unlocking soon...');
           clearInterval(timer);
+          // Refetch so the page flips to unlocked state automatically
+          fetchCapsule();
         } else {
           const days = Math.floor(distance / (1000 * 60 * 60 * 24));
           const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -62,8 +64,16 @@ const CapsuleDetail = () => {
     }
   };
 
+  const normalizeDate = (date) => {
+    // Ensure UTC ISO strings are parsed correctly
+    if (typeof date === 'string' && !date.endsWith('Z') && !date.includes('+')) {
+      return date + 'Z';
+    }
+    return date;
+  };
+
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
+    return new Date(normalizeDate(date)).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
